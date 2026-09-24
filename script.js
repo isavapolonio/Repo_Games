@@ -9,34 +9,43 @@ const player = {
     x: 100,
     y: 100,
     w: 50,
-    h: 50,
-    vx: 50
+    r: 50,
+    vx: 50,
+    vy: 50
 };
 
 let last = 0; // Marca a posição do último frame
 
 function update(dt) {
     player.x += player.vx * dt;
-    // Se o player sair da tela, ele volta para o início
-    if (player.x < 0 || player.x + player.w > canvas.width) {
-        player.vx *= -1;
+    player.y += player.vy * dt;
+    // Atualiza a posição horizontal e vertical do player
+
+    if (player.x + player.w > canvas.width || player.x < 0) {
+        player.vx *= -1;}
+    // Inverte a direção do player quando ele atinge as bordas do canvas
+
+    if (player.y + player.r > canvas.height || player.y < 0) {
+        player.vy *= -1;
     }
+    // Bate no teto/chão e inverte a direção do player
 }
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
     ctx.fillStyle = "#30e742ff";
-    ctx.fillRect(player.x, player.y, player.w, player.h);
+    ctx.beginPath();
+    ctx.arc(player.x + player.w / 2, player.y + player.r / 2, player.w / 2, 0, Math.PI * 2);
+    ctx.fill();
 
     ctx.fillStyle = "#ffffffff";
-    ctx.fillRect(player.x + 10, player.y + 10, player.w - 20, player.h - 20);
-
     ctx.fillText("O DeltaTime - dt independe da taxa de quadros", 10, 20);
 }
 
 function loop(ts) {
     if (!last) last = ts;
-    const dt = Math.min(0.05, (ts - last) / 1000); 
+    let dt = Math.min(0.05, (ts - last) / 1000); 
     last = ts;
 
     update(dt);
@@ -46,3 +55,5 @@ function loop(ts) {
 }
 
 requestAnimationFrame(loop); // executar primeiro disparo
+
+// Eu uso o DeltaTime - dt para garantir que o movimento do player seja suave e independente da taxa de quadros.
